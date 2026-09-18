@@ -1,0 +1,1015 @@
+/* =========================================================
+   VARIABLES GLOBALES
+   Todo el color y la tipografía del sitio se controla desde aquí.
+   ========================================================= */
+:root {
+  /* --- Colores --- */
+  --color-black:        #0a0a0a;   /* negro base, fondo principal */
+  --color-black-soft:   #161412;   /* negro un poco más cálido, para capas */
+  --color-burgundy:     #4a0f20;   /* borgoña profundo, acento principal */
+  --color-burgundy-soft:#6e1b30;   /* borgoña más claro, para detalles/hover */
+  --color-gold:         #c9a24b;   /* dorado envejecido, líneas y detalles */
+  --color-gold-light:   #e8d9b5;   /* dorado claro, para texto sobre fondo oscuro */
+  --color-ivory:        #f4efe6;   /* texto principal sobre fondos oscuros */
+  --color-ivory-dim:    #d8d0c2;   /* texto secundario / párrafos largos */
+
+  /* --- Tipografía --- */
+  --font-display: 'Cormorant Garamond', serif;  /* títulos, nombres, cifras grandes */
+  --font-body:    'Jost', sans-serif;           /* párrafos, etiquetas, formularios */
+
+  --fs-display-xl: clamp(3rem, 9vw, 6.5rem);    /* nombres en portada */
+  --fs-display-lg: clamp(2.2rem, 6vw, 3.6rem);  /* títulos de sección */
+  --fs-display-md: clamp(1.4rem, 3vw, 1.9rem);  /* subtítulos (Ceremonia/Recepción) */
+  --fs-body-lg:    clamp(1.05rem, 2vw, 1.25rem);
+  --fs-body-md:    1rem;
+  --fs-body-sm:    0.95rem;
+
+  /* --- Espaciado y layout --- */
+  --section-padding-inline: clamp(1.5rem, 6vw, 4rem);
+  --content-max-width: 640px;
+  --hairline-color: var(--color-gold);
+
+  /* Alto real de pantalla, con fallback para navegadores sin soporte de dvh */
+  --vh-fallback: 100vh;
+  --vh: 100dvh;
+
+
+  /* =========================================================
+   REVEAL: fade + subida (títulos y párrafos) y línea dorada
+   dibujándose bajo el título. Se activan agregando la clase
+   "is-visible" desde JS cuando la sección entra en pantalla.
+   ========================================================= */
+
+  --reveal-distance: 30px;   /* cuánto sube el texto al aparecer */
+  --reveal-duration: 1.3s;   /* duración de la animación */
+  --reveal-ease: cubic-bezier(0.22, 1, 0.36, 1); /* salida suave, sin rebote */
+
+}
+
+/* =========================================================
+   RESET BÁSICO
+   ========================================================= */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+body {
+  background: var(--color-black);
+  color: var(--color-ivory);
+  font-family: var(--font-body);
+  font-weight: 300;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, p, ul, li, fieldset {
+  margin: 0;
+  padding: 0;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button, input {
+  font-family: inherit;
+}
+
+/* Respetar preferencia de movimiento reducido */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto !important;
+  }
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+
+/* =========================================================
+   CONTRASTE: overlay ajustable por sección
+   La opacidad se controla con --overlay-strength (0 a 1).
+   Por defecto es más oscuro que antes; si una sección
+   necesita aún más, se sube con una clase modificadora.
+   ========================================================= */
+.section__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    180deg,
+    rgba(10, 10, 10, var(--overlay-strength, 0.78)) 0%,
+    rgba(10, 10, 10, calc(var(--overlay-strength, 0.78) * 0.75)) 45%,
+    rgba(74, 15, 32, calc(var(--overlay-strength, 0.78) * 0.9)) 100%
+  );
+}
+
+.section__overlay--portada {
+  background: linear-gradient(
+    180deg,
+    rgba(10, 10, 10, calc(var(--overlay-strength, 0.55) * 0.7)) 0%,
+    rgba(10, 10, 10, var(--overlay-strength, 0.55)) 55%,
+    rgba(74, 15, 32, calc(var(--overlay-strength, 0.55) * 1.15)) 100%
+  );
+}
+
+/* Modificadores rápidos: agrégalos junto a section__overlay
+   en el HTML de la sección que lo necesite */
+.section__overlay--strong {
+  --overlay-strength: 0.9;
+}
+
+.section__overlay--soft {
+  --overlay-strength: 0.6;
+}
+
+/* =========================================================
+   CONTRASTE: sombra de respaldo en el texto
+   Refuerza la legibilidad incluso si el overlay no alcanza
+   en alguna zona puntual de la imagen.
+   ========================================================= */
+.section__title,
+.portada__names,
+.portada__guest,
+.portada__date,
+.section__text,
+.event-card__title,
+.event-card__detail,
+.agradecimientos__signature {
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.55);
+}
+
+/* =========================================================
+   CONTRASTE EXTRA: panel tipo "vidrio esmerilado"
+   Úsalo solo en secciones donde el overlay no sea suficiente
+   (ej. imágenes muy claras o con mucho detalle detrás del texto).
+   ========================================================= */
+.section__content--glass {
+  background: rgba(10, 10, 10, 0.35);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border-radius: 4px;
+  padding: 2rem var(--section-padding-inline);
+  border: 1px solid rgba(201, 162, 75, 0.25); /* línea dorada tenue */
+}
+
+/* Si el navegador no soporta backdrop-filter, cae en un fondo
+   sólido semitransparente en vez de verse sin contraste */
+@supports not (backdrop-filter: blur(1px)) {
+  .section__content--glass {
+    background: rgba(10, 10, 10, 0.6);
+  }
+}
+
+
+
+
+/* =========================================================
+   SCROLL SUAVE POR SECCIONES (scroll-snap)
+   Cada sección ocupa exactamente el alto de la pantalla y
+   el scroll "engancha" al inicio de cada una.
+   ========================================================= */
+html {
+  scroll-behavior: smooth;
+}
+
+#main {
+  height: var(--vh-fallback);
+  height: var(--vh);
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+}
+
+.section {
+  position: relative;
+  height: var(--vh-fallback);
+  height: var(--vh);
+  width: 100%;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* =========================================================
+   IMAGEN DE FONDO DE SECCIÓN
+   Clase que se aplica a la <img> de cada sección: la deja
+   fija al tamaño de la sección y detrás del contenido.
+   ========================================================= */
+.section__bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  z-index: 0;
+  /* Si la imagen aún no existe, el fondo de la sección se ve en su lugar */
+  background-color: var(--color-black-soft);
+}
+
+/* Capa de color sobre la imagen, para que el texto siempre sea legible */
+.section__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    180deg,
+    rgba(10, 10, 10, 0.75) 0%,
+    rgba(10, 10, 10, 0.55) 45%,
+    rgba(74, 15, 32, 0.65) 100%
+  );
+}
+
+.section__overlay--portada {
+  background: linear-gradient(
+    180deg,
+    rgba(10, 10, 10, 0.35) 0%,
+    rgba(10, 10, 10, 0.55) 55%,
+    rgba(74, 15, 32, 0.75) 100%
+  );
+}
+
+.section__content {
+  position: relative;
+  z-index: 2;
+  max-width: var(--content-max-width);
+  width: 100%;
+  padding: 0 var(--section-padding-inline);
+  text-align: center;
+}
+
+/* =========================================================
+   ELEMENTOS COMPARTIDOS
+   ========================================================= */
+.hairline {
+  width: 60px;
+  height: 1px;
+  background: var(--hairline-color);
+}
+
+.hairline--center {
+  margin: 1.4rem auto;
+}
+
+.section__title {
+  font-family: var(--font-display);
+  font-size: var(--fs-display-lg);
+  font-weight: 500;
+  color: var(--color-ivory);
+}
+
+.section__text {
+  font-size: var(--fs-body-lg);
+  color: var(--color-ivory-dim);
+  max-width: 46ch;
+  margin: 0 auto;
+}
+
+.section__text--tight {
+  max-width: 38ch;
+}
+
+.section__note {
+  margin-top: 1.2rem;
+  font-size: var(--fs-body-sm);
+  color: var(--color-gold-light);
+  font-style: italic;
+  font-family: var(--font-display);
+}
+
+/* =========================================================
+   CORAZONES FLOTANTES
+   Contenedor invisible que ocupa toda la sección; los
+   corazones se insertan dinámicamente desde JS.
+   ========================================================= */
+   .hearts-container {
+    position: absolute;
+    inset: 0;
+    z-index: 1;           /* encima del overlay, debajo del texto */
+    overflow: hidden;
+    pointer-events: none; /* nunca bloquea clics ni botones */
+  }
+  
+  .heart {
+    position: absolute;
+    width: var(--heart-size, 18px);
+    height: var(--heart-size, 18px);
+    color: var(--heart-color, var(--color-gold));
+    opacity: 0;
+    pointer-events: none;
+    animation-name: heart-float;
+    animation-timing-function: ease-in-out;
+    animation-fill-mode: forwards;
+  }
+  
+  .heart svg {
+    width: 100%;
+    height: 100%;
+    fill: currentColor;
+    display: block;
+  }
+  
+  /* Aparece, flota hacia --tx/--ty, y se desvanece */
+  @keyframes heart-float {
+    0% {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.3);
+    }
+    15% {
+      opacity: 0.9;
+      transform: translate(-50%, -50%) scale(1);
+    }
+    80% {
+      opacity: 0.8;
+    }
+    100% {
+      opacity: 0;
+      transform: translate(
+        calc(-50% + var(--tx, 0px)),
+        calc(-50% + var(--ty, -40px))
+      ) scale(0.85);
+    }
+  }
+  
+  /* Si el usuario prefiere menos movimiento, no mostrar corazones */
+  @media (prefers-reduced-motion: reduce) {
+    .hearts-container {
+      display: none;
+    }
+  }
+
+
+
+/* =========================================================
+   REVEAL: fade + subida (títulos y párrafos) y línea dorada
+   dibujándose bajo el título. Se activan agregando la clase
+   "is-visible" desde JS cuando la sección entra en pantalla.
+   ========================================================= */
+  .reveal-fade {
+    opacity: 0;
+    transform: translateY(var(--reveal-distance));
+    transition: opacity var(--reveal-duration) var(--reveal-ease),
+                transform var(--reveal-duration) var(--reveal-ease);
+  }
+  
+  .reveal-fade.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  /* Línea dorada: pasa de ancho 0 a su ancho final */
+  .hairline--animated {
+    width: 0;
+    transition: width var(--reveal-duration) var(--reveal-ease);
+  }
+  
+  .hairline--animated.is-visible {
+    width: 60px; /* debe coincidir con el ancho de .hairline en tu CSS actual */
+  }
+  
+  /* Retrasos escalonados: úsalos en orden (título, línea, párrafo...) */
+  .reveal-delay-1 { transition-delay: 0.15s; }
+  .reveal-delay-2 { transition-delay: 0.3s; }
+  .reveal-delay-3 { transition-delay: 0.45s; }
+  
+  /* Respetar accesibilidad: sin animación para quien prefiere menos movimiento */
+  @media (prefers-reduced-motion: reduce) {
+    .reveal-fade,
+    .hairline--animated {
+      transition: none;
+      opacity: 1;
+      transform: none;
+      width: 60px;
+    }
+  }
+
+
+
+
+
+
+
+/* =========================================================
+   1. PORTADA
+   ========================================================= */
+.portada__pretitle {
+  font-size: var(--fs-body-sm);
+  letter-spacing: 0.08em;
+  color: var(--color-gold-light);
+}
+
+.portada__names {
+  font-family: var(--font-display);
+  font-size: var(--fs-display-xl);
+  font-weight: 400;
+  color: var(--color-ivory);
+  line-height: 1.1;
+  margin-top: 0.8rem;
+}
+
+.portada__amp {
+  display: inline-block;
+  font-style: italic;
+  color: var(--color-gold);
+  font-size: 0.8em;
+  padding: 0 0.15em;
+}
+
+.portada__date {
+  font-size: var(--fs-body-md);
+  letter-spacing: 0.04em;
+  color: var(--color-ivory-dim);
+}
+
+.scroll-cue {
+  position: absolute;
+  bottom: 2.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+}
+
+.scroll-cue__line {
+  display: block;
+  width: 1px;
+  height: 42px;
+  background: var(--color-gold);
+  animation: scroll-cue-move 2.2s ease-in-out infinite;
+  transform-origin: top;
+}
+
+@keyframes scroll-cue-move {
+  0%   { transform: scaleY(0.2); opacity: 0.3; }
+  50%  { transform: scaleY(1);   opacity: 1;   }
+  100% { transform: scaleY(0.2); opacity: 0.3; }
+}
+
+/* =========================================================
+   CONTADOR REGRESIVO (portada)
+   ========================================================= */
+   .countdown {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    margin: 1.4rem 0;
+  }
+  
+  .countdown__item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 52px;
+  }
+  
+  .countdown__number {
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 4.5vw, 2.6rem);
+    font-weight: 500;
+    color: var(--color-ivory);
+    line-height: 1;
+  }
+  
+  .countdown__label {
+    margin-top: 0.3rem;
+    font-size: var(--fs-body-sm);
+    letter-spacing: 0.06em;
+    color: var(--color-gold-light);
+  }
+  
+  .countdown__separator {
+    font-family: var(--font-display);
+    font-size: clamp(1.4rem, 3.5vw, 2rem);
+    color: var(--color-gold);
+    transform: translateY(-0.6rem); /* alinea el ":" con los números, no con las etiquetas */
+  }
+  
+  /* En pantallas muy angostas, reducir espacios para que no se corte */
+  @media (max-width: 360px) {
+    .countdown {
+      gap: 0.35rem;
+    }
+    .countdown__item {
+      min-width: 42px;
+    }
+  }
+
+/* =========================================================
+   3. LUGAR Y FECHA
+   ========================================================= */
+.event-grid {
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.8rem;
+}
+
+.event-card__title {
+  font-family: var(--font-display);
+  font-size: var(--fs-display-md);
+  color: var(--color-gold-light);
+  margin-bottom: 0.6rem;
+}
+
+.event-card__detail {
+  font-size: var(--fs-body-md);
+  color: var(--color-ivory-dim);
+  margin-bottom: 0.2rem;
+}
+
+.event-card__link {
+  display: inline-block;
+  margin-top: 0.7rem;
+  font-size: var(--fs-body-sm);
+  color: var(--color-gold);
+  border-bottom: 1px solid var(--color-gold);
+  padding-bottom: 2px;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.event-card__link:hover {
+  color: var(--color-ivory);
+  border-color: var(--color-ivory);
+}
+
+.event-divider {
+  width: 40px;
+  height: 1px;
+  background: var(--color-burgundy-soft);
+}
+
+/* =========================================================
+   4. LLUVIA DE SOBRES
+   ========================================================= */
+.envelope-icon {
+  width: 64px;
+  margin: 0 auto 1.4rem;
+}
+
+.envelope-icon__svg {
+  width: 100%;
+  height: auto;
+  fill: none;
+  stroke: var(--color-gold);
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+
+/* =========================================================
+   5. VESTIMENTA
+   ========================================================= */
+.palette {
+  list-style: none;
+  display: flex;
+  justify-content: center;
+  gap: 1.6rem;
+  margin-top: 2rem;
+}
+
+.palette__swatch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.palette__swatch::before {
+  content: "";
+  display: block;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--color-gold);
+}
+
+.palette__swatch--black::before   { background: var(--color-black); }
+.palette__swatch--gold::before    { background: var(--color-gold); }
+.palette__swatch--burgundy::before{ background: var(--color-burgundy); }
+
+.palette__swatch span {
+  font-size: var(--fs-body-sm);
+  color: var(--color-ivory-dim);
+}
+
+/* =========================================================
+   6. CONFIRMACIÓN (botones SI / NO)
+   ========================================================= */
+.rsvp-buttons {
+  margin-top: 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.rsvp-btn {
+  background: transparent;
+  border: 1px solid var(--color-gold);
+  color: var(--color-gold-light);
+  padding: 0.8rem 2rem;
+  font-size: var(--fs-body-sm);
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+}
+
+.rsvp-btn--yes:hover {
+  background: var(--color-gold);
+  color: var(--color-black);
+}
+
+.rsvp-btn--no {
+  border-color: var(--color-burgundy-soft);
+}
+
+.rsvp-btn--no:hover {
+  background: var(--color-burgundy);
+  color: var(--color-ivory);
+  border-color: var(--color-burgundy);
+}
+
+.rsvp-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.rsvp-form__submit {
+  display: inline-block;
+  background: transparent;
+  border: 1px solid var(--color-gold);
+  color: var(--color-gold-light);
+  padding: 0.8rem 2.2rem;
+  font-size: var(--fs-body-sm);
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: background 0.25s ease, color 0.25s ease;
+}
+
+.rsvp-form__submit:hover {
+  background: var(--color-gold);
+  color: var(--color-black);
+}
+
+.rsvp-form__feedback {
+  margin-top: 1.4rem;
+  text-align: center;
+  font-size: var(--fs-body-sm);
+  color: var(--color-gold-light);
+  min-height: 1.2em;
+}
+
+/* =========================================================
+   PANTALLAS DE ESTADO
+   "Verificando" y "No encontrado" ocupan toda la pantalla
+   y se muestran/ocultan desde JS con el atributo [hidden].
+   ========================================================= */
+.state-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-black);
+  padding: var(--section-padding-inline);
+}
+
+.state-screen[hidden] {
+  display: none !important;
+}
+
+.state-screen__content {
+  max-width: var(--content-max-width);
+  text-align: center;
+}
+
+.state-screen__text {
+  margin-top: 1.4rem;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: var(--fs-body-lg);
+  color: var(--color-ivory-dim);
+}
+
+.loader {
+  width: 40px;
+  height: 40px;
+  margin: 0 auto;
+  border-radius: 50%;
+  border: 2px solid var(--color-burgundy-soft);
+  border-top-color: var(--color-gold);
+  animation: loader-spin 0.9s linear infinite;
+}
+
+@keyframes loader-spin {
+  to { transform: rotate(360deg); }
+}
+
+.not-found__contact {
+  margin-top: 1.8rem;
+}
+
+/* Nombre del invitado en la portada */
+.portada__guest {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: var(--fs-body-lg);
+  color: var(--color-gold-light);
+  margin: 0.3rem 0 0.9rem;
+}
+
+/* =========================================================
+   MODAL DE CONFIRMACIÓN RSVP
+   ========================================================= */
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(10, 10, 10, 0.8);
+  padding: 1.5rem;
+}
+
+.modal[hidden] {
+  display: none !important;
+}
+
+.modal__box {
+  background: var(--color-black-soft);
+  border: 1px solid var(--color-gold);
+  padding: 2.2rem 1.8rem;
+  max-width: 360px;
+  width: 100%;
+  text-align: center;
+}
+
+.modal__text {
+  font-family: var(--font-display);
+  font-size: var(--fs-display-md);
+  color: var(--color-ivory);
+}
+
+.modal__actions {
+  margin-top: 1.6rem;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.modal__cancel {
+  background: transparent;
+  border: 1px solid var(--color-ivory-dim);
+  color: var(--color-ivory-dim);
+  padding: 0.8rem 1.6rem;
+  font-size: var(--fs-body-sm);
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.modal__cancel:hover {
+  border-color: var(--color-ivory);
+  color: var(--color-ivory);
+}
+
+/* =========================================================
+   7. VIDEO
+   Ocupa toda la sección, sin controles. El bucle se inicia
+   desde JS solo cuando la sección está en pantalla.
+   ========================================================= */
+.section__video {
+  pointer-events: none;
+}
+
+/* =========================================================
+   8. AGRADECIMIENTOS
+   ========================================================= */
+.agradecimientos__signature {
+  margin-top: 1.6rem;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: var(--fs-display-md);
+  color: var(--color-gold-light);
+}
+
+/* =========================================================
+   NAVEGACIÓN POR PUNTOS (lateral)
+   ========================================================= */
+.dot-nav {
+  position: fixed;
+  right: 1.6rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  z-index: 10;
+}
+
+.dot-nav__dot {
+  position: relative;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 1px solid var(--color-gold);
+  background: transparent;
+  transition: background 0.25s ease, transform 0.25s ease;
+}
+
+.dot-nav__dot.is-active {
+  background: var(--color-gold);
+  transform: scale(1.3);
+}
+
+/* Etiqueta que aparece al pasar el cursor (solo en pantallas con mouse) */
+.dot-nav__dot::after {
+  content: attr(data-label);
+  position: absolute;
+  right: 140%;
+  top: 50%;
+  transform: translateY(-50%);
+  white-space: nowrap;
+  font-family: var(--font-body);
+  font-size: var(--fs-body-sm);
+  color: var(--color-ivory);
+  background: var(--color-black-soft);
+  border: 1px solid var(--color-burgundy-soft);
+  padding: 0.25rem 0.6rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+@media (hover: hover) {
+  .dot-nav__dot:hover::after {
+    opacity: 1;
+  }
+}
+
+/* =========================================================
+   RESPONSIVE
+   Ajustes pensados para Celular, Tablet y PC.
+   ========================================================= */
+
+/* --- Celular (retrato) --- */
+@media (max-width: 600px) {
+  :root {
+    --section-padding-inline: 1.4rem;
+  }
+
+  .dot-nav {
+    right: 0.8rem;
+    gap: 0.7rem;
+  }
+
+  .dot-nav__dot::after {
+    display: none; /* evitar tooltips en pantallas táctiles */
+  }
+
+  .event-grid {
+    gap: 1.4rem;
+  }
+}
+
+/* --- Celular en horizontal: reducir alturas de texto para que quepa --- */
+@media (max-width: 900px) and (orientation: landscape) {
+  .section__content {
+    transform: scale(0.85);
+  }
+}
+
+/* --- Tablet --- */
+@media (min-width: 601px) and (max-width: 1024px) {
+  :root {
+    --content-max-width: 560px;
+  }
+}
+
+/* --- PC / pantallas grandes --- */
+@media (min-width: 1025px) {
+  :root {
+    --content-max-width: 680px;
+  }
+
+  .event-grid {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 3.5rem;
+  }
+
+  .event-divider {
+    width: 1px;
+    height: 90px;
+  }
+}
+
+/* --- Pantallas muy grandes (desktop ancho) --- */
+@media (min-width: 1600px) {
+  :root {
+    --content-max-width: 760px;
+  }
+}
+
+
+
+
+
+
+
+
+
+/* =========================================================
+   CONTRASTE: overlay ajustable por sección
+   La opacidad se controla con --overlay-strength (0 a 1).
+   Por defecto es más oscuro que antes; si una sección
+   necesita aún más, se sube con una clase modificadora.
+   ========================================================= */
+   .section__overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(
+      180deg,
+      rgba(10, 10, 10, var(--overlay-strength, 0.78)) 0%,
+      rgba(10, 10, 10, calc(var(--overlay-strength, 0.78) * 0.75)) 45%,
+      rgba(74, 15, 32, calc(var(--overlay-strength, 0.78) * 0.9)) 100%
+    );
+  }
+  
+  .section__overlay--portada {
+    background: linear-gradient(
+      180deg,
+      rgba(10, 10, 10, calc(var(--overlay-strength, 0.55) * 0.7)) 0%,
+      rgba(10, 10, 10, var(--overlay-strength, 0.55)) 55%,
+      rgba(74, 15, 32, calc(var(--overlay-strength, 0.55) * 1.15)) 100%
+    );
+  }
+  
+  /* Modificadores rápidos: agrégalos junto a section__overlay
+     en el HTML de la sección que lo necesite */
+  .section__overlay--strong {
+    --overlay-strength: 0.9;
+  }
+  
+  .section__overlay--soft {
+    --overlay-strength: 0.6;
+  }
+  
+  /* =========================================================
+     CONTRASTE: sombra de respaldo en el texto
+     Refuerza la legibilidad incluso si el overlay no alcanza
+     en alguna zona puntual de la imagen.
+     ========================================================= */
+  .section__title,
+  .portada__names,
+  .portada__guest,
+  .portada__date,
+  .section__text,
+  .event-card__title,
+  .event-card__detail,
+  .agradecimientos__signature {
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.55);
+  }
+  
+  /* =========================================================
+     CONTRASTE EXTRA: panel tipo "vidrio esmerilado"
+     Úsalo solo en secciones donde el overlay no sea suficiente
+     (ej. imágenes muy claras o con mucho detalle detrás del texto).
+     ========================================================= */
+  .section__content--glass {
+    background: rgba(10, 10, 10, 0.35);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border-radius: 4px;
+    padding: 2rem var(--section-padding-inline);
+    border: 1px solid rgba(201, 162, 75, 0.25); /* línea dorada tenue */
+  }
+  
+  /* Si el navegador no soporta backdrop-filter, cae en un fondo
+     sólido semitransparente en vez de verse sin contraste */
+  @supports not (backdrop-filter: blur(1px)) {
+    .section__content--glass {
+      background: rgba(10, 10, 10, 0.6);
+    }
+  }

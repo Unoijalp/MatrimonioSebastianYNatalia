@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel de Invitaciones — Nuestra Boda</title>
+<link rel="stylesheet" href="stylesenvios.css">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <main class="contenedor">
+    <header class="encabezado">
+      <p class="etiqueta">Panel de los novios</p>
+      <h1 class="titulo">Invitados pendientes</h1>
+      <div class="linea-decorativa"></div>
+      <p class="instruccion">Toca un nombre para enviar su invitación por WhatsApp</p>
+    </header>
+
+    <section id="estado-carga" class="estado-carga">
+      <div class="spinner"></div>
+      <p>Cargando lista de invitados...</p>
+    </section>
+
+    <section id="lista-invitados" class="lista-invitados"></section>
+
+    <section id="estado-vacio" class="estado-vacio oculto">
+      <p>✦ Todos los invitados ya fueron contactados ✦</p>
+    </section>
+
+    <footer class="pie">
+      <p>Gestión interna de invitaciones</p>
+    </footer>
+  </main>
+
+  <!-- Modal de confirmación -->
+  <div id="modal-overlay" class="modal-overlay oculto">
+    <div class="modal-caja">
+      <p class="modal-etiqueta">Confirmar envío</p>
+      <h2 class="modal-nombre" id="modal-nombre">Nombre del invitado</h2>
+      <div class="linea-decorativa modal-linea"></div>
+      <p class="modal-texto">¿Deseas enviar la invitación de WhatsApp a esta persona? Una vez enviada, quedará marcada como contactada.</p>
+      <div class="modal-botones">
+        <button id="modal-cancelar" class="boton-modal boton-cancelar">Cancelar</button>
+        <button id="modal-confirmar" class="boton-modal boton-confirmar">Sí, enviar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

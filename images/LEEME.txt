@@ -1,0 +1,16 @@
+Coloca aquí tus fotos con estos nombres exactos (formato .jpg):
+
+portada.jpg           -> foto principal de la pareja (vertical u horizontal, buena resolución)
+saludo.jpg             -> foto o textura suave para el saludo de bienvenida
+lugar-fecha.jpg        -> foto del lugar de la ceremonia o recepción
+lluvia-sobres.jpg      -> foto neutra/textura (esta sección ya tiene un ícono de sobre)
+vestimenta.jpg         -> foto de moodboard de vestimenta o textura elegante
+confirmacion.jpg       -> foto suave que no compita con el formulario
+agradecimientos.jpg    -> foto de cierre, de la pareja
+
+Recomendación de tamaño: al menos 1600px de ancho, orientación vertical
+para que se vea bien también en celular (la imagen se recorta automáticamente
+con la clase .section__bg, que la hace cubrir toda la sección sin deformarse).
+
+Si aún no tienes una imagen, la sección se ve igual de bien: el fondo cae
+en el color --color-black-soft definido en css/styles.css.

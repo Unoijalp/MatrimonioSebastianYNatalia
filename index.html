@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Natalia & Sebastian · Nuestra boda</title>
+
+  <!-- Tipografías -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500&family=Jost:wght@300;400;500&display=swap"
+    rel="stylesheet">
+
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+
+  <!-- ============================================
+       PANTALLA 1: VERIFICANDO
+       Se muestra mientras se consulta Google Sheets.
+       ============================================ -->
+  <div id="loading-screen" class="state-screen">
+    <div class="state-screen__content">
+      <div class="loader" aria-hidden="true"></div>
+      <p class="state-screen__text">Verificando tu invitación...</p>
+    </div>
+  </div>
+
+  <!-- ============================================
+       PANTALLA 2: INVITADO NO ENCONTRADO
+       Se muestra si el código de la URL no existe
+       en la hoja de cálculo, o si no hay código.
+       ============================================ -->
+  <div id="not-found-screen" class="state-screen" hidden>
+    <div class="state-screen__content">
+      <h2 class="section__title">No te hemos encontrado en la lista</h2>
+      <div class="hairline hairline--center"></div>
+      <p class="section__text reveal-fade reveal-delay-N">
+        Puede que el enlace esté incompleto o mal escrito. Escríbenos y
+        con gusto confirmamos tu invitación.
+      </p>
+      <a class="rsvp-form__submit not-found__contact"
+        href="https://wa.me/57306317948?text=Hola%2C%20no%20encontr%C3%A9%20mi%20invitaci%C3%B3n" target="_blank"
+        rel="noopener">
+        Escríbenos por WhatsApp
+      </a>
+    </div>
+  </div>
+
+  <!-- ============================================
+       NAVEGACIÓN POR PUNTOS (solo visible si el
+       invitado fue verificado)
+       ============================================ -->
+  <nav class="dot-nav" id="dot-nav" hidden aria-label="Navegación de la invitación">
+    <a href="#portada" class="dot-nav__dot" data-label="Portada"></a>
+    <a href="#saludo" class="dot-nav__dot" data-label="Saludo"></a>
+    <a href="#lugar-fecha" class="dot-nav__dot" data-label="Lugar y fecha"></a>
+    <a href="#lluvia-sobres" class="dot-nav__dot" data-label="Lluvia de sobres"></a>
+    <a href="#vestimenta" class="dot-nav__dot" data-label="Vestimenta"></a>
+    <a href="#confirmacion" class="dot-nav__dot" data-label="Confirmación"></a>
+    <a href="#video" class="dot-nav__dot" data-label="Video"></a>
+    <a href="#agradecimientos" class="dot-nav__dot" data-label="Agradecimientos"></a>
+  </nav>
+
+  <!-- ============================================
+       INVITACIÓN (oculta hasta verificar al invitado)
+       ============================================ -->
+  <main id="main" hidden>
+
+    <!-- 1. PORTADA -->
+    <section id="portada" class="section" data-section>
+      <div class="hearts-container" aria-hidden="true"></div>
+      <img src="images/portada.jpg" alt="" class="section__bg">
+      <div class="section__overlay section__overlay--portada"></div>
+      <div class="section__content section__content--portada">
+        <p class="portada__pretitle reveal-fade reveal-delay-N">Nos casamos</p>
+        <h1 class="portada__names reveal-fade reveal-delay-N">Natalia <span class="portada__amp">&amp;</span> Sebastian
+        </h1>
+        <div class="hairline hairline--center"></div>
+        <p class="portada__guest reveal-fade reveal-delay-N">Querid@ <span id="guest-name">—</span></p>
+        <p class="portada__date reveal-fade reveal-delay-N">22 de noviembre, 2026</p>
+
+        <!-- Contador de tiempo restante para el evento -->
+        <div class="countdown" id="countdown" aria-label="Tiempo restante para el evento">
+          <div class="countdown__item">
+            <span class="countdown__number" id="countdown-days">00</span>
+            <span class="countdown__label">Días</span>
+          </div>
+          <div class="countdown__separator">:</div>
+          <div class="countdown__item">
+            <span class="countdown__number" id="countdown-hours">00</span>
+            <span class="countdown__label">Horas</span>
+          </div>
+          <div class="countdown__separator">:</div>
+          <div class="countdown__item">
+            <span class="countdown__number" id="countdown-minutes">00</span>
+            <span class="countdown__label">Min</span>
+          </div>
+          <div class="countdown__separator">:</div>
+          <div class="countdown__item">
+            <span class="countdown__number" id="countdown-seconds">00</span>
+            <span class="countdown__label">Seg</span>
+          </div>
+        </div>
+
+      </div>
+
+
+      <a href="#saludo" class="scroll-cue" aria-label="Ir a la siguiente sección">
+        <span class="scroll-cue__line"></span>
+      </a>
+    </section>
+
+    <!-- 2. SALUDO -->
+    <section id="saludo" class="section" data-section>
+      <div class="hearts-container" aria-hidden="true"></div>
+
+      <img src="images/saludo.jpg" alt="" class="section__bg">
+      <div class="section__overlay"></div>
+      <div class="section__content">
+        <h2 class="section__title">Bienvenidos</h2>
+        <div class="hairline hairline--center"></div>
+        <p class="section__text reveal-fade reveal-delay-N section__content section__content--glass">
+          Con el corazón lleno de amor y gratitud a Dios,
+          hemos decidido unir nuestras vidas en matrimonio
+          y comenzar juntos este hermoso camino que Él ha preparado para nosotros. Tu presencia será un regalo muy
+          especial
+          en este día en el que comienza una nueva etapa de nuestra historia.
+          <br>
+          Con amor y mucha ilusión,
+          esperamos compartir contigo nuestra felicidad
+          y celebrar juntos este “sí, acepto”
+          bajo la bendición de Dios.
+
+          Con cariño, Sebastian y Natalia
+        </p>
+      </div>
+    </section>
+
+    <!-- 3. LUGAR Y FECHA -->
+    <section id="lugar-fecha" class="section" data-section>
+      <div class="hearts-container" aria-hidden="true"></div>
+
+      <img src="images/lugar-fecha.jpg" alt="" class="section__bg">
+      <div class="section__overlay"></div>
+      <div class="section__content">
+        <h2 class="section__title reveal-fade reveal-delay-N">Lugar y fecha</h2>
+        <div class="hairline hairline--center"></div>
+
+        <div class="event-grid">
+          <div class="event-card">
+            <h3 class="event-card__title reveal-fade reveal-delay-N">Ceremonia y Recepción</h3>
+            <p class="event-card__detail reveal-fade reveal-delay-N">2:00 p.m.</p>
+            <p class="event-card__detail reveal-fade reveal-delay-N">Pilares del Rosal Hacienda</p>
+            <a class="event-card__link reveal-fade reveal-delay-N"
+              href="https://www.google.com/maps/dir/mi+ubicacion/Pilares+del+Rosal+-+Hacienda+(Eventos),+Subachoque-El+Rosal+%23Kilometro+3,+El+Rosal,+Cundinamarca"
+              target="_blank" rel="noopener">Ver mapa</a>
+          </div>
+
+          <div class="event-divider" aria-hidden="true"></div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. LLUVIA DE SOBRES -->
+    <section id="lluvia-sobres" class="section" data-section>
+      <div class="hearts-container" aria-hidden="true"></div>
+
+      <img src="images/lluvia-sobres.jpg" alt="" class="section__bg">
+      <div class="section__overlay"></div>
+      <div class="section__content">
+        <div class="envelope-icon" aria-hidden="true">
+          <svg viewBox="0 0 100 70" class="envelope-icon__svg">
+            <rect x="2" y="2" width="96" height="66" rx="2"></rect>
+            <polyline points="2,2 50,42 98,2"></polyline>
+          </svg>
+        </div>
+        <h2 class="section__title reveal-fade reveal-delay-N">Lluvia de sobres</h2>
+        <div class="hairline hairline--center"></div>
+        <p class="section__text reveal-fade reveal-delay-N section__content section__content--glass">
+          Tu presencia es nuestro mayor regalo. Sin embargo, si deseas tener un
+          detalle con nosotros para comenzar este nuevo camino, agradecemos
+          contribuciones en sobre, las cuales podrás depositar en el buzón
+          dispuesto durante la recepción.
+        </p>
+      </div>
+    </section>
+
+    <!-- 5. VESTIMENTA -->
+    <section id="vestimenta" class="section" data-section>
+      <div class="hearts-container" aria-hidden="true"></div>
+
+      <img src="images/vestimenta.jpg" alt="" class="section__bg">
+      <div class="section__overlay"></div>
+      <div class="section__content">
+        <h2 class="section__title reveal-fade reveal-delay-N">Vestimenta</h2>
+        <div class="hairline hairline--center"></div>
+        <p class="section__text reveal-fade reveal-delay-N">
+          Formal de gala. Nos encantaría que nos acompañaras con colores acordes
+          a nuestra celebración.
+        </p>
+        <ul class="palette" aria-label="Colores sugeridos">
+          <li class="palette__swatch palette__swatch--black"><span>Negro</span></li>
+          <li class="palette__swatch palette__swatch--gold"><span>Dorado</span></li>
+          <li class="palette__swatch palette__swatch--burgundy"><span>Borgoña</span></li>
+        </ul>
+        <p class="section__note">Evitar el color blanco, reservado para la novia.</p>
+      </div>
+    </section>
+
+    <!-- 6. CONFIRMACIÓN -->
+    <section id="confirmacion" class="section" data-section>
+      <img src="images/confirmacion.jpg" alt="" class="section__bg">
+      <div class="hearts-container" aria-hidden="true"></div>
+
+      <div class="section__overlay"></div>
+      <div class="section__content">
+        <h2 class="section__title reveal-fade reveal-delay-N">Confirma tu asistencia</h2>
+        <div class="hairline hairline--center"></div>
+
+        <p class="section__text section__text--tight reveal-fade reveal-delay-N">
+          Por favor, antes del 22 de octubre de 2026, cuéntanos si nos acompañarás.
+        </p>
+        
+        <div class="section__content section__content--glass">
+          <div class="rsvp-buttons" id="rsvp-buttons reveal-fade reveal-delay-N">
+            <button type="button" class="rsvp-btn rsvp-btn--yes" data-respuesta="SI">Confirmo</button>
+            <button type="button" class="rsvp-btn rsvp-btn--no" data-respuesta="NO">No podré asistir</button>
+          </div>
+        </div>
+        <p id="rsvp-feedback" class="rsvp-form__feedback" role="status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <!-- 7. VIDEO -->
+    <section id="video" class="section" data-section>
+      <video class="section__bg section__video" src="images/video.mp4" muted loop playsinline preload="metadata"
+        disablepictureinpicture aria-label="Video de Camila y Andrés"></video>
+    </section>
+
+    <!-- 8. AGRADECIMIENTOS -->
+    <section id="agradecimientos" class="section" data-section>
+      <div class="hearts-container" aria-hidden="true"></div>
+
+      <img src="images/agradecimientos.jpg" alt="" class="section__bg">
+      <div class="section__overlay section__overlay--portada"></div>
+      <div class="section__content">
+        <h2 class="section__title reveal-fade reveal-delay-N">Gracias por ser parte de nuestras vidas</h2>
+        <div class="hairline hairline--center"></div>
+        <p class="section__text reveal-fade reveal-delay-N section__content section__content--glass">
+          Gracias por ser parte de nuestra historia y por acompañarnos en el
+          comienzo de esta nueva etapa. Te esperamos con mucho cariño.
+        </p>
+        <p class="agradecimientos__signature">Natalia &amp; Sebastian</p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============================================
+       MODAL: confirmar el envío de la respuesta
+       ============================================ -->
+  <div id="rsvp-modal" class="modal" hidden>
+    <div class="modal__box">
+      <p id="rsvp-modal-text" class="modal__text">¿Confirmas tu respuesta?</p>
+      <div class="modal__actions">
+        <button type="button" id="rsvp-modal-confirm" class="rsvp-form__submit">Sí, enviar</button>
+        <button type="button" id="rsvp-modal-cancel" class="modal__cancel">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/script.js"></script>
+</body>
+
+</html>
