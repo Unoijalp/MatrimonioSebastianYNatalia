@@ -20,9 +20,9 @@
   --fs-display-xl: clamp(3rem, 9vw, 6.5rem);    /* nombres en portada */
   --fs-display-lg: clamp(2.2rem, 6vw, 3.6rem);  /* títulos de sección */
   --fs-display-md: clamp(1.4rem, 3vw, 1.9rem);  /* subtítulos (Ceremonia/Recepción) */
-  --fs-body-lg:    clamp(1.05rem, 2vw, 1.25rem);
-  --fs-body-md:    1rem;
-  --fs-body-sm:    0.95rem;
+  --fs-body-lg:    clamp(1.35rem, 2vw, 1.55rem);
+  --fs-body-md:    1.2rem;
+  --fs-body-sm:    1.05rem;
 
   /* --- Espaciado y layout --- */
   --section-padding-inline: clamp(1.5rem, 6vw, 4rem);
@@ -287,7 +287,7 @@ html {
 
 .section__note {
   margin-top: 1.2rem;
-  font-size: var(--fs-body-sm);
+  font-size: var(--fs-body-lg);
   color: var(--color-gold-light);
   font-style: italic;
   font-family: var(--font-display);
@@ -400,7 +400,11 @@ html {
   }
 
 
-
+.logo{
+  display:inline;
+  align-items: center;
+  justify-content: center;
+}
 
 
 
@@ -617,6 +621,14 @@ html {
   flex-wrap: wrap;
   gap: 1rem;
   justify-content: center;
+
+
+
+  display: inline-grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr; /* iguala todas las columnas al contenido más ancho */
+  gap: 12px; /* el espacio que ya tengas entre botones */
+
 }
 
 .rsvp-btn {
@@ -628,26 +640,128 @@ html {
   letter-spacing: 0.04em;
   cursor: pointer;
   transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+
+
+
+
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  border-radius: 3px;
+  padding: 14px 30px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  text-decoration: none;
+  border: 1px solid transparent;
+  width: 100%; /* ocupa toda la columna del grid */
+}
+
+/* Base compartida, igual que .enlace-boton */
+.rsvp-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  border-radius: 3px;
+  padding: 14px 30px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  text-decoration: none;
+  border: 1px solid transparent;
+
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(232, 217, 181, 0.08);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.25s ease,
+    background 0.3s ease,
+    border-color 0.3s ease,
+    color 0.3s ease;
+}
+
+/* Barrido de brillo, igual que en .enlace-boton */
+.rsvp-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(232, 217, 181, 0.3), transparent);
+  transform: skewX(-20deg);
+  transition: left 0.6s ease;
+  z-index: -1;
+}
+
+.rsvp-btn:hover::before {
+  left: 130%;
+}
+
+.rsvp-btn:hover {
+  transform: translateY(-3px);
+}
+
+.rsvp-btn:active {
+  transform: translateY(-1px) scale(0.97);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(232, 217, 181, 0.08);
+}
+
+/* ---- Variante: Sí asistiré ---- */
+.rsvp-btn--yes {
+  background: linear-gradient(to right, rgba(74, 15, 32, 0.35), rgba(74, 15, 32, 0.15));
+  border-color: var(--color-gold);
+  color: var(--color-gold-light);
 }
 
 .rsvp-btn--yes:hover {
-  background: var(--color-gold);
-  color: var(--color-black);
+  background: linear-gradient(to right, rgba(110, 27, 48, 0.55), rgba(110, 27, 48, 0.25));
+  border-color: var(--color-gold-light);
+  color: var(--color-ivory);
+  box-shadow:
+    0 8px 22px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(201, 162, 75, 0.4),
+    inset 0 1px 0 rgba(232, 217, 181, 0.12);
 }
 
+/* ---- Variante: No podré asistir ---- */
 .rsvp-btn--no {
-  border-color: var(--color-burgundy-soft);
+  background: transparent;
+  border-color: rgba(216, 208, 194, 0.3);
+  color: var(--color-ivory-dim);
 }
 
 .rsvp-btn--no:hover {
-  background: var(--color-burgundy);
+  border-color: var(--color-burgundy-soft);
   color: var(--color-ivory);
-  border-color: var(--color-burgundy);
+  background: rgba(74, 15, 32, 0.15);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
 }
 
-.rsvp-btn:disabled {
+/* Estado deshabilitado, por si ya se envió la respuesta */
+.rsvp-btn:disabled,
+.rsvp-btn.deshabilitado {
   opacity: 0.4;
-  cursor: not-allowed;
+  pointer-events: none;
+  transform: none;
+  box-shadow: none;
 }
 
 .rsvp-form__submit {
@@ -805,11 +919,14 @@ html {
    8. AGRADECIMIENTOS
    ========================================================= */
 .agradecimientos__signature {
-  margin-top: 1.6rem;
+  position: absolute;
+  bottom: 100px;
   font-family: var(--font-display);
   font-style: italic;
-  font-size: var(--fs-display-md);
+  font-size: var(--fs-display-lg);
   color: var(--color-gold-light);
+  z-index: 1000;
+  
 }
 
 /* =========================================================
@@ -1012,4 +1129,224 @@ html {
     .section__content--glass {
       background: rgba(10, 10, 10, 0.6);
     }
+  }
+
+
+  #retry-connection-btn {
+    margin-top: 1.6rem;
+  }
+
+
+  .tarjeta-invitado {
+    background: linear-gradient(to right, rgba(74, 15, 32, 0.3), rgba(74, 15, 32, 0.12));
+    border: 1px solid var(--color-gold);
+    border-radius: 3px;
+    padding: 20px 28px;
+    cursor: pointer;
+    text-align: center;
+    position: relative;
+    isolation: isolate;
+  
+    /* Sombra tipo botón elevado */
+    box-shadow:
+      0 4px 12px rgba(0, 0, 0, 0.4),
+      inset 0 1px 0 rgba(232, 217, 181, 0.08);
+  
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.25s ease,
+      background 0.3s ease,
+      border-color 0.3s ease;
+  }
+  
+  /* Brillo sutil que recorre el borde, sugiere interactividad */
+  .tarjeta-invitado::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 3px;
+    padding: 1px;
+    background: linear-gradient(120deg, transparent 30%, var(--color-gold-light) 50%, transparent 70%);
+    background-size: 250% 100%;
+    background-position: 100% 0;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.3s ease, background-position 0.8s ease;
+    z-index: -1;
+    pointer-events: none;
+  }
+  
+  .tarjeta-invitado:hover {
+    transform: translateY(-3px);
+    background: linear-gradient(to right, rgba(110, 27, 48, 0.5), rgba(110, 27, 48, 0.2));
+    border-color: var(--color-gold-light);
+    box-shadow:
+      0 8px 22px rgba(0, 0, 0, 0.5),
+      0 0 0 1px rgba(201, 162, 75, 0.4),
+      inset 0 1px 0 rgba(232, 217, 181, 0.12);
+  }
+  
+  .tarjeta-invitado:hover::before {
+    opacity: 1;
+    background-position: -50% 0;
+  }
+  
+  /* Efecto de "presionado" al hacer clic, como un botón físico */
+  .tarjeta-invitado:active {
+    transform: translateY(-1px) scale(0.98);
+    box-shadow:
+      0 2px 8px rgba(0, 0, 0, 0.4),
+      inset 0 1px 0 rgba(232, 217, 181, 0.08);
+  }
+  
+  /* Flecha/ícono que aparece indicando la acción */
+  .nombre-invitado::before {
+    content: '✉';
+    display: inline-block;
+    margin-right: 10px;
+    color: var(--color-gold);
+    opacity: 0;
+    transform: translateX(-6px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    font-size: 0.85em;
+  }
+  
+  .tarjeta-invitado:hover .nombre-invitado::before {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  
+  .tarjeta-invitado.enviando {
+    opacity: 0.55;
+    pointer-events: none;
+    transform: none;
+    box-shadow: none;
+  }
+  
+  .tarjeta-invitado.enviada {
+    opacity: 0.4;
+    pointer-events: none;
+    background: rgba(255, 255, 255, 0.02);
+    border-color: rgba(201, 162, 75, 0.15);
+    box-shadow: none;
+    transform: none;
+  }
+  
+  .tarjeta-invitado.enviada::before {
+    display: none;
+  }
+  
+  .tarjeta-invitado.enviada .nombre-invitado::before {
+    content: '';
+    margin: 0;
+  }
+  
+  .tarjeta-invitado.enviada .nombre-invitado::after {
+    content: ' ✓ Enviada';
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    color: var(--color-gold);
+    letter-spacing: 1px;
+    vertical-align: middle;
+  }
+
+
+
+
+
+  a {
+    color: var(--color-gold-light);
+    text-decoration: none;
+  }
+  
+  /* Estilo tipo botón para enlaces de acción */
+  .enlace-boton {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--color-gold-light);
+    background: linear-gradient(to right, rgba(74, 15, 32, 0.3), rgba(74, 15, 32, 0.12));
+    border: 1px solid var(--color-gold);
+    border-radius: 3px;
+    padding: 12px 26px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+  
+    box-shadow:
+      0 4px 12px rgba(0, 0, 0, 0.4),
+      inset 0 1px 0 rgba(232, 217, 181, 0.08);
+  
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.25s ease,
+      background 0.3s ease,
+      border-color 0.3s ease,
+      color 0.3s ease;
+  }
+  
+  /* Barrido de brillo dorado al pasar el mouse */
+  .enlace-boton::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(232, 217, 181, 0.25), transparent);
+    transform: skewX(-20deg);
+    transition: left 0.6s ease;
+    z-index: -1;
+  }
+  
+  .enlace-boton:hover {
+    transform: translateY(-3px);
+    background: linear-gradient(to right, rgba(110, 27, 48, 0.5), rgba(110, 27, 48, 0.2));
+    border-color: var(--color-gold-light);
+    color: var(--color-ivory);
+    box-shadow:
+      0 8px 22px rgba(0, 0, 0, 0.5),
+      0 0 0 1px rgba(201, 162, 75, 0.4),
+      inset 0 1px 0 rgba(232, 217, 181, 0.12);
+  }
+  
+  .enlace-boton:hover::before {
+    left: 130%;
+  }
+  
+  .enlace-boton:active {
+    transform: translateY(-1px) scale(0.97);
+    box-shadow:
+      0 2px 8px rgba(0, 0, 0, 0.4),
+      inset 0 1px 0 rgba(232, 217, 181, 0.08);
+  }
+  
+  /* Flecha que se desliza al hover, refuerza la sensación de "ir a algo" */
+  .enlace-boton .flecha {
+    transition: transform 0.25s ease;
+  }
+  
+  .enlace-boton:hover .flecha {
+    transform: translateX(4px);
+  }
+  
+  /* Variante secundaria, más discreta (para acciones menos importantes) */
+  .enlace-boton.secundario {
+    background: transparent;
+    border-color: rgba(216, 208, 194, 0.3);
+    color: var(--color-ivory-dim);
+    box-shadow: none;
+  }
+  
+  .enlace-boton.secundario:hover {
+    border-color: var(--color-gold);
+    color: var(--color-gold-light);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
   }

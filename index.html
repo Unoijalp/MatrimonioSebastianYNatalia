@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Natalia & Sebastian · Nuestra boda</title>
+  <title>Sebastian & Natalia · Nuestra boda</title>
   <link rel="icon" type="image/png" href="./images/isotipoSyN.ico">
 
   <!-- Tipografías -->
@@ -25,8 +25,11 @@
        ============================================ -->
   <div id="loading-screen" class="state-screen">
     <div class="state-screen__content">
+
       <div class="loader" aria-hidden="true"></div>
       <p class="state-screen__text">Verificando tu invitación...</p>
+      <br>
+      <img class="logo" src="./images/isotipo.svg" alt="S&N logo" width="200" height="100">
     </div>
   </div>
 
@@ -39,15 +42,32 @@
     <div class="state-screen__content">
       <h2 class="section__title">No te hemos encontrado en la lista</h2>
       <div class="hairline hairline--center"></div>
-      <p class="section__text reveal-fade reveal-delay-N">
-        Puede que el enlace esté incompleto o mal escrito. Escríbenos y
-        con gusto confirmamos tu invitación.
+      <p>
+        Puede que el enlace esté incompleto o mal escrito.
       </p>
+      <br>
       <a class="rsvp-form__submit not-found__contact"
         href="https://wa.me/57306317948?text=Hola%2C%20no%20encontr%C3%A9%20mi%20invitaci%C3%B3n" target="_blank"
         rel="noopener">
         Escríbenos por WhatsApp
       </a>
+    </div>
+  </div>
+
+  <!-- ============================================
+       PANTALLA 3: ERROR DE CONEXIÓN
+       ============================================ -->
+  <div id="connection-error-screen" class="state-screen" hidden>
+    <div class="state-screen__content">
+      <h2 class="section__title">No pudimos conectarnos</h2>
+      <div class="hairline hairline--center"></div>
+      <p class="section__text">
+        Parece que hubo un problema de conexión al verificar tu invitación.
+        Intenta de nuevo.
+      </p>
+      <button type="button" id="retry-connection-btn" class="rsvp-form__submit">
+        Reintentar
+      </button>
     </div>
   </div>
 
@@ -81,9 +101,16 @@
         <h1 class="portada__names reveal-fade reveal-delay-N">Natalia <span class="portada__amp">&amp;</span> Sebastian
         </h1>
         <div class="hairline hairline--center"></div>
-        <p class="portada__guest reveal-fade reveal-delay-N">Querid@ <span id="guest-name">—</span></p>
-        <p class="portada__date reveal-fade reveal-delay-N">22 de noviembre, 2026</p>
+        <img class="logo" src="./images/isotipo.svg" alt="S&N logo" width="200" height="100">
+        <p class="portada__guest reveal-fade reveal-delay-N"> <span id="guest-name">—</span>
+          <br>
+          Queremos que seas parte de este día tan especial!
 
+          <br>
+<br>
+          Faltan:
+        </p>
+ 
         <!-- Contador de tiempo restante para el evento -->
         <div class="countdown" id="countdown" aria-label="Tiempo restante para el evento">
           <div class="countdown__item">
@@ -122,21 +149,25 @@
       <img src="images/saludo.jpg" alt="" class="section__bg">
       <div class="section__overlay"></div>
       <div class="section__content">
-        <h2 class="section__title">Bienvenidos</h2>
+        <h2 class="section__title">Hola!!</h2>
         <div class="hairline hairline--center"></div>
         <p class="section__text reveal-fade reveal-delay-N section__content section__content--glass">
           Con el corazón lleno de amor y gratitud a Dios,
           hemos decidido unir nuestras vidas en matrimonio
-          y comenzar juntos este hermoso camino que Él ha preparado para nosotros. Tu presencia será un regalo muy
-          especial
-          en este día en el que comienza una nueva etapa de nuestra historia.
+          y comenzar juntos este hermoso camino que Él ha preparado para nosotros. 
+          <br>
+          Tu presencia será un regalo muy
+          especial en este día en el que comienza una nueva etapa de nuestra historia.
           <br>
           Con amor y mucha ilusión,
           esperamos compartir contigo nuestra felicidad
           y celebrar juntos este “sí, acepto”
           bajo la bendición de Dios.
-
-          Con cariño, Sebastian y Natalia
+          <br><br>
+          <i>
+            Con cariño, Sebastian y Natalia.
+          </i>
+            
         </p>
       </div>
     </section>
@@ -154,11 +185,12 @@
         <div class="event-grid">
           <div class="event-card">
             <h3 class="event-card__title reveal-fade reveal-delay-N">Ceremonia y Recepción</h3>
+            <p class="event-card__detail reveal-fade reveal-delay-N">22 de noviembre, 2026</p>
             <p class="event-card__detail reveal-fade reveal-delay-N">2:00 p.m.</p>
             <p class="event-card__detail reveal-fade reveal-delay-N">Pilares del Rosal Hacienda</p>
-            <a class="event-card__link reveal-fade reveal-delay-N"
+            <a class="enlace-boton reveal-fade reveal-delay-N"
               href="https://www.google.com/maps/dir/mi+ubicacion/Pilares+del+Rosal+-+Hacienda+(Eventos),+Subachoque-El+Rosal+%23Kilometro+3,+El+Rosal,+Cundinamarca"
-              target="_blank" rel="noopener">Ver mapa</a>
+              target="_blank" rel="noopener">Ver ruta</a>
           </div>
 
           <div class="event-divider" aria-hidden="true"></div>
@@ -200,7 +232,7 @@
       <div class="section__content">
         <h2 class="section__title reveal-fade reveal-delay-N">Vestimenta</h2>
         <div class="hairline hairline--center"></div>
-        <p class="section__text reveal-fade reveal-delay-N">
+        <p class="section__text reveal-fade reveal-delay-N section__content--glass">
           Formal de gala. Nos encantaría que nos acompañaras con colores acordes
           a nuestra celebración.
         </p>
@@ -224,7 +256,7 @@
         <div class="hairline hairline--center"></div>
 
         <p class="section__text section__text--tight reveal-fade reveal-delay-N">
-          Por favor, antes del 22 de octubre de 2026, cuéntanos si nos acompañarás.
+          Por favor, antes del 22 de octubre, cuéntanos si nos acompañarás.
         </p>
         
         <div class="section__content section__content--glass">
@@ -250,14 +282,16 @@
       <img src="images/agradecimientos.jpg" alt="" class="section__bg">
       <div class="section__overlay section__overlay--portada"></div>
       <div class="section__content">
+      <img class="logo" src="./images/isotipo.svg" alt="S&N logo" width="200" height="100">
+
         <h2 class="section__title reveal-fade reveal-delay-N">Gracias por ser parte de nuestras vidas</h2>
         <div class="hairline hairline--center"></div>
-        <p class="section__text reveal-fade reveal-delay-N section__content section__content--glass">
+        <p class="section__text reveal-fade reveal-delay-N section__content">
           Gracias por ser parte de nuestra historia y por acompañarnos en el
           comienzo de esta nueva etapa. Te esperamos con mucho cariño.
         </p>
-        <p class="agradecimientos__signature">Natalia &amp; Sebastian</p>
       </div>
+      <p class="agradecimientos__signature">Natalia &amp; Sebastian</p>
     </section>
 
   </main>

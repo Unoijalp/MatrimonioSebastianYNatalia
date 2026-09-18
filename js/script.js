@@ -8,24 +8,65 @@
    npx --yes serve -p 3000
    ========================================================= */
 const CONFIG = {
-  APPS_SCRIPT_URL: "https://script.google.com/macros/s/AKfycbzN7f3pPhAhxR8LxIOn5tovSE-Yeka6etf10gS0AkbygHmUBbOpfyHLjT6Kta3kXIwA/exec", // ej: https://script.google.com/macros/s/XXXXX/exec
+  APPS_SCRIPT_URL: "https://script.google.com/macros/s/AKfycbwe4CyZs3tHCTSLfxhPwbqePQHsu8iD3zpy6CsCTp-I-Xcxx5nvnptW6hPID8InO-3d/exec",
   PARAM_NAME: "fam", // nombre del parámetro en la URL (?fam=1234)
 };
 
 /* =========================================================
-   ELEMENTOS DE LAS PANTALLAS DE ESTADO
+   CONFIGURACIÓN DE RED
+   ========================================================= */
+const NETWORK_CONFIG = {
+  maxRetries: 3,
+  baseTimeout: 6000,     // timeout del primer intento (cold start más lento)
+  retryDelay: 1500,      // espera base entre intentos
+};
+
+/* =========================================================
+   ELEMENTOS DE LAS PANTALLAS DE ESTADO (actualizado)
    ========================================================= */
 const loadingScreen = document.getElementById("loading-screen");
 const notFoundScreen = document.getElementById("not-found-screen");
+const connectionErrorScreen = document.getElementById("connection-error-screen");
 const dotNav = document.getElementById("dot-nav");
 const main = document.getElementById("main");
 
 function showOnly(screen) {
   loadingScreen.hidden = screen !== "loading";
   notFoundScreen.hidden = screen !== "not-found";
+  connectionErrorScreen.hidden = screen !== "connection-error";
   dotNav.hidden = screen !== "invitation";
   main.hidden = screen !== "invitation";
 }
+
+/* =========================================================
+   FETCH CON TIMEOUT
+   Evita que una petición se quede "colgada" indefinidamente.
+   ========================================================= */
+function fetchWithTimeout(url, timeoutMs) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+  return fetch(url, { signal: controller.signal }).finally(() => {
+    clearTimeout(timeoutId);
+  });
+}
+
+function wait(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/* =========================================================
+PING DE CALENTAMIENTO
+Se dispara de inmediato al cargar el script (no espera al
+DOMContentLoaded), en paralelo con el resto de recursos de
+la página. No bloquea nada: si falla, no pasa nada, solo
+perdemos el "calentamiento" pero el flujo normal sigue.
+========================================================= */
+(function warmUpAppsScript() {
+  const url = `${CONFIG.APPS_SCRIPT_URL}?action=ping`;
+  fetch(url).catch(() => {
+    /* silencioso: es solo un intento de precalentar el servidor */
+  });
+})();
 
 /* =========================================================
    1. LECTURA DEL CÓDIGO EN LA URL
@@ -37,23 +78,36 @@ function getGuestCodeFromUrl() {
 }
 
 /* =========================================================
-   2. CONSULTA A GOOGLE APPS SCRIPT (búsqueda del invitado)
-   Hace un GET simple (sin preflight CORS) y espera:
-   { found: true,  nombre: "Familia Pérez" }
-   { found: false }
+   CONSULTA A GOOGLE APPS SCRIPT, CON REINTENTOS Y BACKOFF
+   Cada intento espera más tiempo que el anterior, y el
+   timeout también crece: el cold start es la excepción, no
+   la regla, así que solo el primer intento necesita más margen.
    ========================================================= */
 async function lookupGuest(code) {
   const url = `${CONFIG.APPS_SCRIPT_URL}?action=lookup&code=${encodeURIComponent(code)}`;
-  const response = await fetch(url);
+  let lastError;
 
-  if (!response.ok) {
-    throw new Error("No se pudo conectar con la hoja de invitados.");
+  for (let attempt = 1; attempt <= NETWORK_CONFIG.maxRetries; attempt++) {
+    const timeout = NETWORK_CONFIG.baseTimeout * attempt; // 6s, 12s, 18s
+
+    try {
+      const response = await fetchWithTimeout(url, timeout);
+      if (!response.ok) throw new Error(`Respuesta HTTP ${response.status}`);
+      return await response.json();
+    } catch (error) {
+      lastError = error;
+      console.warn(`Intento ${attempt} falló (timeout ${timeout}ms):`, error.message);
+      if (attempt < NETWORK_CONFIG.maxRetries) {
+        await wait(NETWORK_CONFIG.retryDelay * attempt); // 1.5s, 3s
+      }
+    }
   }
-  return response.json();
+
+  throw lastError;
 }
 
 /* =========================================================
-   3. FLUJO PRINCIPAL DE VERIFICACIÓN
+   FLUJO PRINCIPAL DE VERIFICACIÓN (actualizado)
    ========================================================= */
 async function initGuestVerification() {
   showOnly("loading");
@@ -72,18 +126,18 @@ async function initGuestVerification() {
       document.getElementById("guest-name").textContent = data.nombre;
       showOnly("invitation");
       initDotNav();
-      initSectionVideo();
       initRsvp(code);
     } else {
+      // Aquí sí hubo respuesta del servidor: el código no existe
       showOnly("not-found");
     }
   } catch (error) {
-    console.error(error);
-    // Si falla la conexión, tratamos igual que "no encontrado"
-    // para no dejar la pantalla de carga infinita.
-    showOnly("not-found");
+    // Aquí NO hubo respuesta válida: fue un problema de red/conexión
+    console.error("Error de conexión tras varios intentos:", error);
+    showOnly("connection-error");
   }
 }
+
 
 /* =========================================================
    4. NAVEGACIÓN POR PUNTOS
@@ -131,7 +185,7 @@ function initSectionVideo() {
     (entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
-          video.play().catch(() => {});
+          video.play().catch(() => { });
         } else {
           video.pause();
         }
@@ -219,53 +273,53 @@ async function sendRsvp(code, respuesta) {
 /* =========================================================
    CONTADOR REGRESIVO PARA EL EVENTO
    ========================================================= */
-   function initCountdown() {
-    // Fecha y hora del evento (ajusta según la ceremonia)
-    const eventDate = new Date("2026-11-22T14:00:00");
-  
-    const elDays = document.getElementById("countdown-days");
-    const elHours = document.getElementById("countdown-hours");
-    const elMinutes = document.getElementById("countdown-minutes");
-    const elSeconds = document.getElementById("countdown-seconds");
-  
-    function pad(num) {
-      return String(num).padStart(2, "0");
-    }
-  
-    function updateCountdown() {
-      const now = new Date();
-      const diff = eventDate - now;
-  
-      if (diff <= 0) {
-        elDays.textContent = "00";
-        elHours.textContent = "00";
-        elMinutes.textContent = "00";
-        elSeconds.textContent = "00";
-        clearInterval(timerId);
-        return;
-      }
-  
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-      const minutes = Math.floor((diff / (1000 * 60)) % 60);
-      const seconds = Math.floor((diff / 1000) % 60);
-  
-      elDays.textContent = pad(days);
-      elHours.textContent = pad(hours);
-      elMinutes.textContent = pad(minutes);
-      elSeconds.textContent = pad(seconds);
-    }
-  
-    updateCountdown(); // primer pintado inmediato, sin esperar 1 segundo
-    const timerId = setInterval(updateCountdown, 1000);
+function initCountdown() {
+  // Fecha y hora del evento (ajusta según la ceremonia)
+  const eventDate = new Date("2026-11-22T14:00:00");
+
+  const elDays = document.getElementById("countdown-days");
+  const elHours = document.getElementById("countdown-hours");
+  const elMinutes = document.getElementById("countdown-minutes");
+  const elSeconds = document.getElementById("countdown-seconds");
+
+  function pad(num) {
+    return String(num).padStart(2, "0");
   }
 
+  function updateCountdown() {
+    const now = new Date();
+    const diff = eventDate - now;
 
-  /* =========================================================
-   ANIMACIÓN: CORAZONES FLOTANTES
-   Ajusta estos valores para cambiar frecuencia, tamaño y
-   movimiento sin tocar el resto del código.
-   ========================================================= */
+    if (diff <= 0) {
+      elDays.textContent = "00";
+      elHours.textContent = "00";
+      elMinutes.textContent = "00";
+      elSeconds.textContent = "00";
+      clearInterval(timerId);
+      return;
+    }
+
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+    const minutes = Math.floor((diff / (1000 * 60)) % 60);
+    const seconds = Math.floor((diff / 1000) % 60);
+
+    elDays.textContent = pad(days);
+    elHours.textContent = pad(hours);
+    elMinutes.textContent = pad(minutes);
+    elSeconds.textContent = pad(seconds);
+  }
+
+  updateCountdown(); // primer pintado inmediato, sin esperar 1 segundo
+  const timerId = setInterval(updateCountdown, 1000);
+}
+
+
+/* =========================================================
+ ANIMACIÓN: CORAZONES FLOTANTES
+ Ajusta estos valores para cambiar frecuencia, tamaño y
+ movimiento sin tocar el resto del código.
+ ========================================================= */
 const HEARTS_CONFIG = {
   spawnInterval: 700,   // ms entre cada corazón nuevo (menor = más frecuente)
   minSize: 10,          // px, tamaño mínimo del corazón
@@ -359,31 +413,36 @@ function initHeartsAnimation() {
    Al salir de pantalla, se quita para que se repita si el
    usuario vuelve a pasar por esa sección.
    ========================================================= */
-   function initRevealAnimations() {
-    const sections = document.querySelectorAll(".section");
-  
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          const revealEls = entry.target.querySelectorAll(
-            ".reveal-fade, .hairline--animated"
-          );
-  
-          if (entry.isIntersecting) {
-            revealEls.forEach((el) => el.classList.add("is-visible"));
-          } else {
-            revealEls.forEach((el) => el.classList.remove("is-visible"));
-          }
-        });
-      },
-      { threshold: 0.35 } // se activa cuando ~35% de la sección es visible
-    );
-  
-    sections.forEach((section) => observer.observe(section));
-  }
+function initRevealAnimations() {
+  const sections = document.querySelectorAll(".section");
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        const revealEls = entry.target.querySelectorAll(
+          ".reveal-fade, .hairline--animated"
+        );
+
+        if (entry.isIntersecting) {
+          revealEls.forEach((el) => el.classList.add("is-visible"));
+        } else {
+          revealEls.forEach((el) => el.classList.remove("is-visible"));
+        }
+      });
+    },
+    { threshold: 0.35 } // se activa cuando ~35% de la sección es visible
+  );
+
+  sections.forEach((section) => observer.observe(section));
+}
 
 
-
+/* =========================================================
+   BOTÓN DE REINTENTAR (pantalla de error de conexión)
+   ========================================================= */
+document.getElementById("retry-connection-btn").addEventListener("click", () => {
+  initGuestVerification();
+});
 
 
 
@@ -391,8 +450,8 @@ function initHeartsAnimation() {
    INICIO
    ========================================================= */
 document.addEventListener("DOMContentLoaded", () => {
-  initGuestVerification(); 
+  initGuestVerification();
   initCountdown();         //  no depende de la verificación del invitado
   initHeartsAnimation();
-  initRevealAnimations(); 
+  initRevealAnimations();
 });
