@@ -105,8 +105,13 @@ async function enviarMensaje(codigo, tarjetaEl) {
 
     const numero = limpiarNumero(resultado.telefono);
     const mensaje = resultado.mensaje || '';
+    //console.log('Longitud del string:', mensaje.length);
+    //console.log('Códigos:', [...mensaje].map(c => c.codePointAt(0).toString(16)));
     const mensajeCodificado = encodeURIComponent(mensaje);
-    const linkWhatsApp = `https://wa.me/${numero}?text=${mensajeCodificado}`;
+
+    //const linkWhatsApp = 'https://wa.me/57'+numero+'?text='+mensajeCodificado;
+    const linkWhatsApp = `https://api.whatsapp.com/send?phone=57${numero}&text=${mensajeCodificado}`;
+    //console.log(linkWhatsApp);
 
     // 2. Marcar como enviado en la hoja (columna D -> "SI")
     const respuestaMarcar = await fetch(`${URL_APP_SCRIPT}?action=markSent&codigo=${encodeURIComponent(codigo)}`);
@@ -124,7 +129,8 @@ async function enviarMensaje(codigo, tarjetaEl) {
     cerrarModal();
 
     // 4. Redirigir a WhatsApp
-    window.location.href = linkWhatsApp;
+    //window.location.href = linkWhatsApp;
+    window.open(linkWhatsApp, '_blank');
 
   } catch (error) {
     alert(`Error: ${error.message}`);
