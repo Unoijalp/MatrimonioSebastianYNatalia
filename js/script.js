@@ -172,30 +172,81 @@ function initDotNav() {
   sections.forEach((section) => observer.observe(section));
 }
 
+
 /* =========================================================
-   VIDEO DE SECCIÓN
-   Sin controles. Reproduce en bucle solo mientras la
-   sección está visible; se pausa al salir de pantalla.
+   VIDEO DE FONDO: FORZAR AUTOPLAY + RESPALDO PARA iOS
+   - Fuerza muted por JS (no solo por atributo HTML).
+   - Reproduce/pausa según si la sección está visible
+     (ahorra batería y mejora la probabilidad de autoplay).
+   - Si el navegador bloquea el autoplay (ej. Modo de bajo
+     consumo en iPhone), muestra un botón para que el usuario
+     lo inicie manualmente.
    ========================================================= */
-function initSectionVideo() {
-  const video = document.querySelector(".section__video");
-  if (!video) return;
+function initSectionVideos() {
+  const videos = document.querySelectorAll(".section__video");
 
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          video.play().catch(() => { });
-        } else {
-          video.pause();
-        }
+  videos.forEach((video) => {
+    // Forzar mute por JS: algunos navegadores ignoran el atributo
+    // si se aplica después de que el video empezó a cargar.
+    video.muted = true;
+    video.setAttribute("muted", "");
+    video.playsInline = true;
+
+    const fallbackBtn = document.querySelector(
+      `.video-play-fallback[data-video-target="${video.id}"]`
+    );
+
+    function attemptPlay() {
+      const playPromise = video.play();
+
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            if (fallbackBtn) fallbackBtn.hidden = true;
+          })
+          .catch(() => {
+            // Autoplay bloqueado por el navegador (común en iPhone
+            // con Modo de bajo consumo): mostramos el botón manual.
+            if (fallbackBtn) fallbackBtn.hidden = false;
+          });
+      }
+    }
+
+    // Reproducir solo cuando la sección es visible; pausar si no,
+    // para ahorrar batería/datos y evitar videos "sonando" de fondo.
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            attemptPlay();
+          } else {
+            video.pause();
+          }
+        });
+      },
+      { threshold: 0.5 }
+    );
+
+    observer.observe(video);
+
+    // Si el usuario toca el botón de respaldo, se reproduce
+    // como resultado directo de un gesto: esto sí lo permite iOS
+    // incluso en Modo de bajo consumo.
+    if (fallbackBtn) {
+      fallbackBtn.addEventListener("click", () => {
+        video.play();
+        fallbackBtn.hidden = true;
       });
-    },
-    { threshold: 0.5 }
-  );
-
-  observer.observe(video.closest("section") || video);
+    }
+  });
 }
+
+document.addEventListener("DOMContentLoaded", initSectionVideos);
+
+
+
+
+
 
 /* =========================================================
    5. CONFIRMACIÓN DE ASISTENCIA (botones + modal + Apps Script)
@@ -455,3 +506,131 @@ document.addEventListener("DOMContentLoaded", () => {
   initHeartsAnimation();
   initRevealAnimations();
 });
+
+
+
+
+
+
+
+
+/* =========================================================
+   COMPONENTE: CALENDARIO DE LA BODA
+   Genera dinámicamente la cuadrícula del mes y marca el día
+   del evento. Cambia estos valores según tu fecha real.
+   ========================================================= */
+   const WEDDING_CALENDAR_CONFIG = {
+    containerId: "wedding-calendar",
+    year: 2026,
+    month: 10, // 0 = enero, 1 = febrero, 2 = marzo... (igual que Date de JS)
+    day: 22,
+    monthNames: [
+      "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+      "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre",
+    ],
+    weekdayLabels: ["D", "L", "M", "M", "J", "V", "S"],
+  };
+  
+  function renderWeddingCalendar(config = WEDDING_CALENDAR_CONFIG) {
+    const container = document.getElementById(config.containerId);
+    if (!container) return;
+  
+    const firstDayOfMonth = new Date(config.year, config.month, 1).getDay(); // 0 = domingo
+    const daysInMonth = new Date(config.year, config.month + 1, 0).getDate();
+  
+    let html = `
+      <div class="wedding-calendar__header">
+        <span class="wedding-calendar__month">${config.monthNames[config.month]}</span>
+        <span class="wedding-calendar__year">${config.year}</span>
+      </div>
+      <div class="wedding-calendar__weekdays">
+        ${config.weekdayLabels.map((w) => `<span>${w}</span>`).join("")}
+      </div>
+      <div class="wedding-calendar__days">
+    `;
+  
+    // Casillas vacías antes del día 1 (para alinear con el día de la semana correcto)
+    for (let i = 0; i < firstDayOfMonth; i++) {
+      html += `<span class="wedding-calendar__day wedding-calendar__day--empty"></span>`;
+    }
+  
+    // Días del mes, con un pequeño retraso escalonado para la animación de entrada
+    for (let day = 1; day <= daysInMonth; day++) {
+      const isMarked = day === config.day;
+      const delay = (firstDayOfMonth + day) * 15; // ms, efecto cascada al aparecer
+  
+      html += `
+        <span class="wedding-calendar__day ${isMarked ? "wedding-calendar__day--marked" : ""}"
+              style="animation-delay:${delay}ms">
+          ${day}
+        </span>
+      `;
+    }
+  
+    html += `</div>`;
+    container.innerHTML = html;
+  }
+  
+  /* =========================================================
+     COMPONENTE: RELOJ DIGITAL DEL EVENTO
+     Muestra una hora fija (la del evento, no la hora actual),
+     con los dígitos apareciendo con una pequeña caída y un ":"
+     que parpadea suavemente para dar sensación de "vivo".
+     ========================================================= */
+  const DIGITAL_CLOCK_CONFIG = {
+    containerId: "digital-clock-ceremony",
+    hour: 14, // formato 24h 
+    minute: 0,
+    label: "Ceremonia",
+  };
+  
+  function renderDigitalClock(config = DIGITAL_CLOCK_CONFIG) {
+    const container = document.getElementById(config.containerId);
+    if (!container) return;
+  
+    const period = config.hour >= 12 ? "PM" : "AM";
+    const hour12 = ((config.hour + 11) % 12) + 1;
+    const hourStr = String(hour12).padStart(2, "0");
+    const minuteStr = String(config.minute).padStart(2, "0");
+  
+    container.innerHTML = `
+      <span class="digital-clock__label">${config.label}</span>
+      <div class="digital-clock__face">
+        <span class="digital-clock__digit" style="animation-delay:0ms">${hourStr}</span>
+        <span class="digital-clock__colon">:</span>
+        <span class="digital-clock__digit" style="animation-delay:150ms">${minuteStr}</span>
+        <span class="digital-clock__period">${period}</span>
+      </div>
+    `;
+  }
+  
+  /* =========================================================
+     INICIO DE LOS COMPONENTES
+     ========================================================= */
+  document.addEventListener("DOMContentLoaded", () => {
+    renderWeddingCalendar();
+    renderDigitalClock();
+  });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  

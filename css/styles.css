@@ -1350,3 +1350,176 @@ html {
     color: var(--color-gold-light);
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
   }
+
+
+
+
+
+
+  /* =========================================================
+   COMPONENTE: CALENDARIO + RELOJ (sección "Lugar y fecha")
+   ========================================================= */
+.date-time-showcase {
+  margin-top: 2.4rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+/* ---------- Calendario ---------- */
+.wedding-calendar {
+  width: 240px;
+  /* background: var(--color-black-soft); */
+  border: 1px solid var(--color-gold);
+  padding: 1.2rem 1rem 1.4rem;
+}
+
+.wedding-calendar__header {
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  gap: 0.4rem;
+  font-family: var(--font-display);
+  margin-bottom: 0.8rem;
+}
+
+.wedding-calendar__month {
+  font-size: var(--fs-display-md);
+  color: var(--color-gold-light);
+  font-style: italic;
+}
+
+.wedding-calendar__year {
+  font-size: var(--fs-body-md);
+  color: var(--color-ivory-dim);
+}
+
+.wedding-calendar__weekdays,
+.wedding-calendar__days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.wedding-calendar__weekdays span {
+  text-align: center;
+  font-size: var(--fs-body-sm);
+  color: var(--color-burgundy-soft);
+  letter-spacing: 0.03em;
+}
+
+.wedding-calendar__day {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1 / 1;
+  font-size: var(--fs-body-sm);
+  color: var(--color-ivory-dim);
+  opacity: 0;
+  transform: translateY(6px);
+  animation: calendar-day-in 0.5s ease forwards;
+}
+
+.wedding-calendar__day--empty {
+  animation: none;
+}
+
+@keyframes calendar-day-in {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Día marcado: círculo dorado con un pulso tipo "latido" */
+.wedding-calendar__day--marked {
+  color: var(--color-black);
+  font-weight: 600;
+}
+
+.wedding-calendar__day--marked::before {
+  content: "";
+  position: absolute;
+  inset: 8%;
+  border-radius: 50%;
+  background: var(--color-gold);
+  z-index: -1;
+  animation: marked-day-pulse 2.4s ease-in-out infinite;
+}
+
+.wedding-calendar__day--marked::after {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 1px solid var(--color-gold);
+  opacity: 0;
+  animation: marked-day-ring 2.4s ease-out infinite;
+}
+
+@keyframes marked-day-pulse {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.08); }
+}
+
+@keyframes marked-day-ring {
+  0%   { transform: scale(0.8); opacity: 0.6; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+
+
+
+
+
+
+
+/* =========================================================
+   VIDEO DE FONDO EN SECCIÓN
+   Reutiliza el mismo posicionamiento que .section__bg
+   (position absolute, cubre toda la sección).
+   ========================================================= */
+.section__bg--video {
+  object-fit: cover;
+  object-position: center;
+  background-color: var(--color-black-soft); /* mientras carga el poster */
+}
+
+/* Botón de respaldo si el autoplay fue bloqueado (ej. Modo de bajo consumo) */
+.video-play-fallback {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 3; /* por encima del overlay, para que sea clickeable */
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 1px solid var(--color-gold);
+  background: rgba(10, 10, 10, 0.55);
+  color: var(--color-gold-light);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.25s ease, transform 0.25s ease;
+}
+
+.video-play-fallback svg {
+  width: 26px;
+  height: 26px;
+  fill: currentColor;
+  margin-left: 3px; /* centra visualmente el triángulo de "play" */
+}
+
+.video-play-fallback:hover {
+  background: var(--color-gold);
+  color: var(--color-black);
+  transform: translate(-50%, -50%) scale(1.05);
+}
+
+.video-play-fallback[hidden] {
+  display: none;
+}

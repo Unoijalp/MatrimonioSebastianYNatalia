@@ -185,9 +185,19 @@
         <div class="event-grid">
           <div class="event-card">
             <h3 class="event-card__title reveal-fade reveal-delay-N">Ceremonia y Recepción</h3>
+            <p class="event-card__detail reveal-fade reveal-delay-N" style="font-size:1.5rem;font-weight: bolder">
+              Pilares del Rosal Hacienda
+            </p>
+
+            <div class="date-time-showcase section__content--glass">
+              <div class="wedding-calendar" id="wedding-calendar" aria-label="Fecha del evento"></div>
+              
+              <!-- <div class="digital-clock" id="digital-clock-ceremony" aria-label="Hora de la ceremonia"></div> -->
+            </div>
+            
             <p class="event-card__detail reveal-fade reveal-delay-N">22 de noviembre, 2026</p>
-            <p class="event-card__detail reveal-fade reveal-delay-N">2:00 p.m.</p>
-            <p class="event-card__detail reveal-fade reveal-delay-N">Pilares del Rosal Hacienda</p>
+            <p class="event-card__detail reveal-fade reveal-delay-N" style="font-size:1.5rem;font-weight: bolder">2:00 p.m.</p>
+            <br>
             <a class="enlace-boton reveal-fade reveal-delay-N"
               href="https://www.google.com/maps/dir/mi+ubicacion/Pilares+del+Rosal+-+Hacienda+(Eventos),+Subachoque-El+Rosal+%23Kilometro+3,+El+Rosal,+Cundinamarca"
               target="_blank" rel="noopener">Ver ruta</a>
@@ -271,9 +281,20 @@
 
     <!-- 7. VIDEO -->
     <section id="video" class="section" data-section>
-      <video class="section__bg section__video" src="images/video.mp4" muted loop playsinline preload="metadata"
-        disablepictureinpicture aria-label="Video de Camila y Andrés"></video>
+      <video class="section__bg section__video"  muted loop playsinline 
+        webkit-playsinline="true" preload="metadata" preload="auto" poster="./images/poster.jpg"
+        disablepictureinpicture aria-label="Video de Sebastian y Natalia">
+        <source src="images/video.mp4" type="video/mp4">
+      </video>
+
+            <!-- Botón de respaldo: solo se muestra si el navegador bloqueó el autoplay -->
+      <button type="button" class="video-play-fallback" data-video-target="video-bg-saludo" hidden aria-label="Reproducir video">
+        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+      </button>
     </section>
+
+
+
 
     <!-- 8. AGRADECIMIENTOS -->
     <section id="agradecimientos" class="section" data-section>
