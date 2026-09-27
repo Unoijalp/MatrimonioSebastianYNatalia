@@ -920,7 +920,7 @@ html {
    ========================================================= */
 .agradecimientos__signature {
   position: absolute;
-  bottom: 100px;
+  bottom: 60px;
   font-family: var(--font-display);
   font-style: italic;
   font-size: var(--fs-display-lg);
@@ -1360,7 +1360,7 @@ html {
    COMPONENTE: CALENDARIO + RELOJ (sección "Lugar y fecha")
    ========================================================= */
 .date-time-showcase {
-  margin-top: 2.4rem;
+  margin-top: 1rem;
   display: flex;
   flex-wrap: wrap;
   gap: 2rem;
