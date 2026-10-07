@@ -129,8 +129,8 @@ async function enviarMensaje(codigo, tarjetaEl) {
     cerrarModal();
 
     // 4. Redirigir a WhatsApp
-    //window.location.href = linkWhatsApp;
-    window.open(linkWhatsApp, '_blank');
+    window.location.href = linkWhatsApp;
+    //window.open(linkWhatsApp, '_blank');
 
   } catch (error) {
     alert(`Error: ${error.message}`);
