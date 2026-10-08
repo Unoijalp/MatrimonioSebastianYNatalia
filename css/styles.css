@@ -1524,3 +1524,63 @@ html {
 .video-play-fallback[hidden] {
   display: none;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+.btn-musica {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--color-burgundy);
+  border: 1px solid var(--color-gold);
+  color: var(--color-gold-light);
+  font-size: 1.3rem;
+  cursor: pointer;
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+  transition: transform 0.2s ease, background 0.3s ease;
+}
+
+.btn-musica:hover {
+  background: var(--color-burgundy-soft);
+  transform: scale(1.08);
+}
+
+.btn-musica:active {
+  transform: scale(0.94);
+}
+
+/* Cuando suena: el icono gira suavemente */
+.btn-musica.sonando .icono-musica {
+  display: inline-block;
+  animation: girar-nota 3s linear infinite;
+}
+
+/* Cuando está en pausa: línea tachada */
+.btn-musica.pausada::after {
+  content: '';
+  position: absolute;
+  width: 26px;
+  height: 1px;
+  background: var(--color-gold-light);
+  transform: rotate(-45deg);
+}
+
+@keyframes girar-nota {
+  to { transform: rotate(360deg); }
+}
