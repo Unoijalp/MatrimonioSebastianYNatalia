@@ -624,7 +624,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-
 // ---------- Música de fondo ----------
 (function () {
   const audio = document.getElementById('musica-fondo');
@@ -632,65 +631,62 @@ document.addEventListener("DOMContentLoaded", () => {
   if (!audio || !btn) return;
 
   audio.volume = 0.5;
-  let activadoPorUsuario = false; // true si el usuario la pausó a propósito
 
-  function actualizarBoton(sonando) {
+  let sonando = false;            // estado REAL, actualizado por eventos del audio
+  let pausadoPorUsuario = false;  // true si el usuario la pausó a propósito
+
+  function actualizarBoton() {
     btn.classList.toggle('sonando', sonando);
     btn.classList.toggle('pausada', !sonando);
   }
 
-  async function reproducir() {
-    try {
-      await audio.play();
-      actualizarBoton(true);
-      quitarListeners();
-    } catch (e) {
-      // El navegador bloqueó el autoplay: esperamos el primer gesto
-      actualizarBoton(false);
+  // El botón solo cambia cuando el audio realmente empieza o se detiene
+  audio.addEventListener('playing', () => { sonando = true;  actualizarBoton(); });
+  audio.addEventListener('pause',   () => { sonando = false; actualizarBoton(); });
+
+  function reproducir() {
+    const p = audio.play();
+    if (p && typeof p.catch === 'function') {
+      p.catch(() => { sonando = false; actualizarBoton(); }); // bloqueado por el navegador
     }
   }
 
-  // Eventos que cuentan como "gesto del usuario" (incluye iOS y Android)
-  const eventos = ['touchend', 'click', 'keydown'];
-
-  function alPrimerGesto() {
-    if (!activadoPorUsuario) reproducir();
+  // Primer gesto del usuario en cualquier parte de la página (excepto el botón)
+  function alPrimerGesto(e) {
+    if (btn.contains(e.target)) return;   // el botón tiene su propia lógica
+    if (pausadoPorUsuario || sonando) return;
+    reproducir();
   }
 
-  function quitarListeners() {
-    eventos.forEach(ev => document.removeEventListener(ev, alPrimerGesto));
-  }
+  ['touchend', 'click', 'keydown'].forEach(ev =>
+    document.addEventListener(ev, alPrimerGesto, { passive: true })
+  );
 
-  eventos.forEach(ev => document.addEventListener(ev, alPrimerGesto, { passive: true }));
-
-  // Intento inicial al cargar
+  // Intento inicial (funciona en algunos escritorios)
   window.addEventListener('load', reproducir);
 
-  // Botón de pausa/play
-  btn.addEventListener('click', (e) => {
-    e.stopPropagation(); // evita que dispare alPrimerGesto
-    if (audio.paused) {
-      activadoPorUsuario = false;
-      reproducir();
-    } else {
-      activadoPorUsuario = true;
+  // Botón play/pausa: decide según el estado real
+  btn.addEventListener('click', () => {
+    if (sonando) {
+      pausadoPorUsuario = true;
       audio.pause();
-      actualizarBoton(false);
+    } else {
+      pausadoPorUsuario = false;
+      reproducir();
     }
   });
 
-  // Pausar al salir de la pestaña/app y reanudar al volver
+  // Pausar al salir de la pestaña y reanudar al volver
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) {
       audio.pause();
-    } else if (!activadoPorUsuario && audio.paused) {
+    } else if (!pausadoPorUsuario) {
       reproducir();
     }
   });
+
+  actualizarBoton(); // estado inicial: pausada hasta que realmente suene
 })();
-
-
-
 
 
 
