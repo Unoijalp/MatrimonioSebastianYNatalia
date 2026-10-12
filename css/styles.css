@@ -12,7 +12,8 @@
   --color-gold-light:   #e8d9b5;   /* dorado claro, para texto sobre fondo oscuro */
   --color-ivory:        #f4efe6;   /* texto principal sobre fondos oscuros */
   --color-ivory-dim:    #d8d0c2;   /* texto secundario / párrafos largos */
-  --color-blue:         #182638;
+  --color-blue:         #182638;   /*#182638*//*#456A8A*/
+  --color-beige:       #C8B99F;
 
   /* --- Tipografía --- */
   --font-display: 'Cormorant Garamond', serif;  /* títulos, nombres, cifras grandes */
@@ -604,6 +605,7 @@ html {
   border: 1px solid var(--color-gold);
 }
 
+.palette__swatch--beige::before   { background: var(--color-beige); }
 .palette__swatch--blue::before   { background: var(--color-blue); }
 .palette__swatch--white::before    { background: var(--color-ivory); }
 .palette__swatch--burgundy::before{ background: var(--color-burgundy); }
